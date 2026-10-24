@@ -71,6 +71,11 @@ public class AdminApiController {
     @PostMapping("/attack-simulate/{username}")
     public ResponseEntity<?> simulateAttack(@PathVariable String username) {
         User targetUser = userRepository.findByUsername(username)
+                .or(() -> {
+                    if ("police".equalsIgnoreCase(username)) return userRepository.findByUsername("officer_chen");
+                    if ("officer_chen".equalsIgnoreCase(username)) return userRepository.findByUsername("police");
+                    return java.util.Optional.empty();
+                })
                 .orElseThrow(() -> new IllegalArgumentException("Target user not found: " + username));
 
         // 1. Generate rapid download burst logs

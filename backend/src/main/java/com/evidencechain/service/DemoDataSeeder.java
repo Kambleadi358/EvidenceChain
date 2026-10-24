@@ -75,9 +75,12 @@ public class DemoDataSeeder implements CommandLineRunner {
 
         logger.info("Seeding realistic forensic cases and blockchain blocks for college demonstration...");
 
-        User chen = userRepository.findByUsername("officer_chen").orElseThrow();
-        User miller = userRepository.findByUsername("agent_miller").orElseThrow();
-        User vance = userRepository.findByUsername("judge_vance").orElseThrow();
+        User chen = userRepository.findByUsername("police")
+                .orElseGet(() -> userRepository.findByUsername("officer_chen").orElseThrow());
+        User miller = userRepository.findByUsername("agent_miller")
+                .orElseGet(() -> chen);
+        User vance = userRepository.findByUsername("judge")
+                .orElseGet(() -> userRepository.findByUsername("judge_vance").orElseThrow());
 
         // -------------------------------------------------------------
         // CASE 1: Municipal Water Infrastructure Ransomware Breach

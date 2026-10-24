@@ -1,123 +1,125 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
-import { alertService } from '../services/alertService';
-import { Shield, User, LogOut, ExternalLink, Zap, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Shield, Scale, Settings, LogOut, ExternalLink, User } from 'lucide-react';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const user = authService.getCurrentUser();
-  const [simulating, setSimulating] = useState(false);
-  const [attackMsg, setAttackMsg] = useState(null);
 
   const handleLogout = () => {
     authService.logout();
-    navigate('/login');
+    navigate('/portal');
   };
 
-  const handleSimulateAttack = async () => {
-    if (!window.confirm("Trigger AI anomaly attack simulation? This will simulate rapid exfiltration on 'officer_chen' and lock the account.")) {
-      return;
-    }
-    try {
-      setSimulating(true);
-      const res = await alertService.simulateAttack('officer_chen');
-      setAttackMsg(`Attack simulated! Officer Chen locked with Risk Score ${res.riskScore}/100`);
-      setTimeout(() => setAttackMsg(null), 6000);
-    } catch (err) {
-      alert("Failed to simulate attack: " + (err.response?.data?.message || err.message));
-    } finally {
-      setSimulating(false);
-    }
-  };
-
-  const getRoleBadgeClass = (role) => {
+  const getRoleDisplay = (role) => {
     switch (role) {
-      case 'POLICE': return 'badge-info';
-      case 'FEDERAL': return 'badge-warning';
-      case 'JUDGE': return 'badge-verified';
-      case 'ADMIN': return 'badge-tampered';
-      default: return 'badge-neutral';
+      case 'POLICE':
+        return {
+          title: 'Police Officer',
+          badgeClass: 'badge-info',
+          icon: <Shield size={16} color="#2563EB" />,
+        };
+      case 'JUDGE':
+        return {
+          title: 'Judge',
+          badgeClass: 'badge-verified',
+          icon: <Scale size={16} color="#16A34A" />,
+        };
+      case 'ADMIN':
+        return {
+          title: 'System Administrator',
+          badgeClass: 'badge-neutral',
+          icon: <Settings size={16} color="#475569" />,
+        };
+      default:
+        return {
+          title: 'Authorized User',
+          badgeClass: 'badge-neutral',
+          icon: <User size={16} />,
+        };
     }
   };
+
+  const roleMeta = getRoleDisplay(user?.role);
 
   return (
     <header style={{
-      height: '70px',
-      backgroundColor: 'var(--bg-secondary)',
-      borderBottom: '1px solid var(--border-color)',
+      height: '68px',
+      backgroundColor: '#FFFFFF',
+      borderBottom: '1px solid #E2E8F0',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 30px',
+      padding: '0 32px',
       position: 'sticky',
       top: 0,
       zIndex: 30
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <Shield size={26} color="var(--accent-blue)" />
+      {/* Brand Wordmark */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{
+          width: '34px',
+          height: '34px',
+          borderRadius: '8px',
+          backgroundColor: '#EFF6FF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#2563EB'
+        }}>
+          <Shield size={20} />
+        </div>
         <div>
-          <span style={{ fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.02em', color: '#fff' }}>
-            Evidence<span style={{ color: 'var(--accent-blue)' }}>Chain</span>
+          <span style={{ fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.02em', color: '#0F172A' }}>
+            Evidence<span style={{ color: '#2563EB' }}>Chain</span>
           </span>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginLeft: '10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Cybercrime Forensics Ledger
+          <span style={{
+            fontSize: '0.72rem',
+            color: '#64748B',
+            marginLeft: '10px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            fontWeight: 600
+          }}>
+            Digital Evidence & Chain of Custody
           </span>
         </div>
       </div>
 
+      {/* Right User Bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-        {attackMsg && (
-          <div style={{
-            fontSize: '0.82rem',
-            padding: '6px 14px',
-            borderRadius: '6px',
-            backgroundColor: 'rgba(239, 68, 68, 0.2)',
-            color: '#f87171',
-            border: '1px solid rgba(239, 68, 68, 0.4)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <AlertTriangle size={15} />
-            {attackMsg}
-          </div>
-        )}
-
-        {user?.role === 'ADMIN' && (
-          <button
-            onClick={handleSimulateAttack}
-            disabled={simulating}
-            className="btn btn-sm btn-danger"
-            title="ADMIN DEMO: Injects rapid exfiltration activity to trip AI Anomaly Lockout"
-          >
-            <Zap size={14} />
-            {simulating ? 'Simulating...' : 'Simulate Attack'}
-          </button>
-        )}
-
+        {/* JSP Admin Portal Link */}
         <a
           href="/admin/login"
           target="_blank"
           rel="noreferrer"
           className="btn btn-sm btn-outline"
-          title="Open JSP/Servlet Admin Portal"
-          style={{ fontSize: '0.8rem' }}
+          title="Open Academic JSP/Servlet Admin Portal"
+          style={{ fontSize: '0.78rem', color: '#475569', gap: '6px' }}
         >
           <ExternalLink size={14} />
           JSP Admin Portal
         </a>
 
         {user && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderLeft: '1px solid var(--border-color)', paddingLeft: '18px' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            borderLeft: '1px solid #E2E8F0',
+            paddingLeft: '18px'
+          }}>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.88rem', fontWeight: 600 }}>{user.fullName || user.username}</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
-                <span className={`badge ${getRoleBadgeClass(user.role)}`} style={{ fontSize: '0.68rem', padding: '1px 6px' }}>
+              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0F172A' }}>
+                {roleMeta.title}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px', marginTop: '1px' }}>
+                <span className={`badge ${roleMeta.badgeClass}`} style={{ fontSize: '0.65rem', padding: '1px 6px' }}>
                   {user.role}
                 </span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
-                  {user.agency || 'Cyber Agency'}
+                <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                  {user.username}
                 </span>
               </div>
             </div>
@@ -125,8 +127,8 @@ export default function Navbar() {
             <button
               onClick={handleLogout}
               className="btn btn-sm btn-outline"
-              style={{ padding: '8px', color: 'var(--text-muted)' }}
-              title="Logout"
+              style={{ padding: '8px', color: '#64748B' }}
+              title="Sign Out"
             >
               <LogOut size={16} />
             </button>

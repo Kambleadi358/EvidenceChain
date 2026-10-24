@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { ledgerService } from '../services/ledgerService';
-import { Boxes, ShieldCheck, ShieldAlert, RefreshCw, Link2, Hash, Clock, User, CheckCircle2 } from 'lucide-react';
+import {
+  Boxes,
+  ShieldCheck,
+  ShieldAlert,
+  RefreshCw,
+  Hash,
+  Clock,
+  User,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Link2
+} from 'lucide-react';
 
 export default function LedgerExplorer() {
   const [blocks, setBlocks] = useState([]);
   const [validation, setValidation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [validating, setValidating] = useState(false);
+  const [expandedBlockIndex, setExpandedBlockIndex] = useState(null);
 
   const loadLedger = async () => {
     try {
@@ -40,26 +53,37 @@ export default function LedgerExplorer() {
     }
   };
 
+  const toggleExpand = (index) => {
+    setExpandedBlockIndex(expandedBlockIndex === index ? null : index);
+  };
+
   return (
     <div className="page-body">
       {/* Page Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '16px',
+        marginBottom: '24px'
+      }}>
         <div>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>
-            Blockchain Ledger Explorer
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+            Blockchain Ledger & Custody
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '4px' }}>
-            Transparent cryptographic audit chain linking all forensic evidence blocks via SHA-256 parent hashes.
+          <p style={{ color: '#64748B', fontSize: '0.9rem', marginTop: '4px' }}>
+            Immutable hash-linked ledger blocks preserving evidence fingerprints and parent hashes.
           </p>
         </div>
 
         <button
           onClick={handleValidateNow}
           disabled={validating}
-          className="btn btn-outline btn-sm"
+          className="btn btn-primary btn-sm"
         >
           <RefreshCw size={14} className={validating ? 'animate-spin' : ''} />
-          {validating ? 'Validating Nodes...' : 'Re-Validate Entire Chain'}
+          {validating ? 'Validating Nodes...' : 'Validate Chain Continuity'}
         </button>
       </div>
 
@@ -67,9 +91,9 @@ export default function LedgerExplorer() {
       {validation && (
         <div style={{
           padding: '20px 24px',
-          borderRadius: '12px',
-          backgroundColor: validation.valid ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-          border: validation.valid ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid rgba(239, 68, 68, 0.35)',
+          borderRadius: '10px',
+          backgroundColor: validation.valid ? '#F0FDF4' : '#FEF2F2',
+          border: validation.valid ? '1px solid #BBF7D0' : '1px solid #FECACA',
           marginBottom: '28px',
           display: 'flex',
           alignItems: 'center',
@@ -79,23 +103,23 @@ export default function LedgerExplorer() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {validation.valid ? (
-              <ShieldCheck size={38} color="var(--verified-green)" />
+              <ShieldCheck size={36} color="#16A34A" />
             ) : (
-              <ShieldAlert size={38} color="var(--tampered-red)" />
+              <ShieldAlert size={36} color="#DC2626" />
             )}
             <div>
               <div style={{
                 fontSize: '1.15rem',
                 fontWeight: 800,
-                color: validation.valid ? 'var(--verified-green)' : '#f87171'
+                color: validation.valid ? '#16A34A' : '#DC2626'
               }}>
-                {validation.valid ? 'BLOCKCHAIN STATUS: 100% INTACT & VERIFIED' : 'CRITICAL LEDGER COMPROMISE DETECTED'}
+                {validation.valid ? 'BLOCKCHAIN STATUS: 100% INTACT & VALID' : 'CRITICAL LEDGER MISMATCH DETECTED'}
               </div>
-              <div style={{ fontSize: '0.85rem', color: '#cbd5e1', marginTop: '4px' }}>
-                {validation.reason}
+              <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '4px' }}>
+                {validation.reason || 'All consecutive SHA-256 parent hash links verified successfully.'}
               </div>
               {validation.brokenBlockIndex != null && (
-                <div style={{ fontSize: '0.8rem', color: '#fca5a5', marginTop: '4px', fontWeight: 700 }}>
+                <div style={{ fontSize: '0.82rem', color: '#DC2626', marginTop: '4px', fontWeight: 700 }}>
                   Broken Link Point: Block #{validation.brokenBlockIndex}
                 </div>
               )}
@@ -103,79 +127,103 @@ export default function LedgerExplorer() {
           </div>
 
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>TOTAL BLOCKS PERSISTED</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff' }}>{validation.totalBlocks}</div>
+            <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Total Blocks Minted</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A' }}>{blocks.length}</div>
           </div>
         </div>
       )}
 
-      {/* Visual Chain Progression Stream */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-dim)' }}>
-            <RefreshCw size={24} className="animate-spin" style={{ margin: '0 auto 10px auto' }} />
-            Loading cryptographic blocks...
-          </div>
-        ) : (
-          blocks.map((block, idx) => {
-            const isGenesis = block.blockIndex === 0;
-            return (
-              <div key={block.blockIndex} className="card" style={{
-                border: isGenesis ? '1px solid #6366f1' : '1px solid var(--border-color)',
-                backgroundColor: isGenesis ? 'rgba(30, 27, 75, 0.4)' : 'var(--bg-card)'
-              }}>
-                {/* Block Header Row */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{
-                      backgroundColor: isGenesis ? '#4f46e5' : '#2563eb',
-                      color: '#fff',
-                      fontSize: '0.78rem',
-                      fontWeight: 800,
-                      padding: '4px 10px',
-                      borderRadius: '6px'
-                    }}>
-                      {isGenesis ? 'GENESIS BLOCK #0' : `BLOCK #${block.blockIndex}`}
-                    </span>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      Minted: {new Date(block.timestamp).toLocaleString()}
-                    </span>
-                  </div>
+      {/* Blocks Table Card */}
+      <div className="card" style={{ padding: '24px' }}>
+        <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>
+          Minted Ledger Blocks
+        </h2>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span className="badge badge-info" style={{ fontSize: '0.68rem' }}>
-                      Evidence ID: {block.evidenceId ? `#${block.evidenceId}` : 'None (Genesis)'}
-                    </span>
-                    <span className="badge badge-verified" style={{ fontSize: '0.68rem' }}>
-                      Authenticity: {block.authenticityScore}/100
-                    </span>
-                  </div>
-                </div>
+        <div className="table-container">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Block #</th>
+                <th>Evidence Ref</th>
+                <th>Minted By</th>
+                <th>Minted Timestamp</th>
+                <th>Block Digest</th>
+                <th>Link Status</th>
+                <th style={{ textAlign: 'right' }}>Hash Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {blocks.length === 0 ? (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>
+                    No blockchain blocks minted yet.
+                  </td>
+                </tr>
+              ) : (
+                blocks.map((b) => {
+                  const isExpanded = expandedBlockIndex === b.blockIndex;
+                  return (
+                    <React.Fragment key={b.id || b.blockIndex}>
+                      <tr>
+                        <td style={{ fontWeight: 800, color: '#2563EB', fontSize: '0.9rem' }}>
+                          #{b.blockIndex}
+                        </td>
+                        <td style={{ fontWeight: 600, color: '#0F172A' }}>
+                          Evidence #{b.evidenceId}
+                        </td>
+                        <td style={{ color: '#475569', fontSize: '0.85rem' }}>
+                          {b.minedBy || 'system'}
+                        </td>
+                        <td style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                          {b.timestamp ? new Date(b.timestamp).toLocaleString() : 'Genesis'}
+                        </td>
+                        <td>
+                          <span className="hash-pill" style={{ fontSize: '0.72rem' }}>
+                            {b.blockHash ? `${b.blockHash.slice(0, 16)}...` : '0x000'}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="badge badge-verified" style={{ fontSize: '0.65rem' }}>
+                            <CheckCircle2 size={12} />
+                            LINKED
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button
+                            onClick={() => toggleExpand(b.blockIndex)}
+                            className="btn btn-outline btn-sm"
+                            style={{ gap: '4px' }}
+                          >
+                            {isExpanded ? 'Hide' : 'Expand'}
+                            {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                          </button>
+                        </td>
+                      </tr>
 
-                {/* Hashes Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: '10px', fontSize: '0.82rem' }}>
-                  <span style={{ color: 'var(--text-dim)', fontWeight: 600 }}>Block Header Hash:</span>
-                  <div className="hash-pill" style={{ color: '#38bdf8' }}>{block.blockHash}</div>
+                      {/* Expanded Hash Row */}
+                      {isExpanded && (
+                        <tr>
+                          <td colSpan="7" style={{ backgroundColor: '#F8FAFC', padding: '16px 20px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '8px', fontSize: '0.8rem' }}>
+                              <span style={{ fontWeight: 600, color: '#64748B' }}>Full Block Hash:</span>
+                              <span className="hash-pill">{b.blockHash}</span>
 
-                  <span style={{ color: 'var(--text-dim)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Link2 size={13} /> Previous Hash:
-                  </span>
-                  <div className="hash-pill" style={{ color: '#94a3b8' }}>{block.previousHash}</div>
+                              <span style={{ fontWeight: 600, color: '#64748B' }}>Previous Block Hash:</span>
+                              <span className="hash-pill">{b.previousHash || '00000000000000000000000000000000 (GENESIS)'}</span>
 
-                  <span style={{ color: 'var(--text-dim)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Hash size={13} /> Evidence File Hash:
-                  </span>
-                  <div className="hash-pill" style={{ color: '#a78bfa' }}>{block.fileHash}</div>
-
-                  <span style={{ color: 'var(--text-dim)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <User size={13} /> Minting Authority:
-                  </span>
-                  <span style={{ color: '#fff', fontWeight: 500 }}>{block.investigatorId}</span>
-                </div>
-              </div>
-            );
-          })
-        )}
+                              <span style={{ fontWeight: 600, color: '#64748B' }}>File Reference Hash:</span>
+                              <span className="hash-pill">{b.fileHash}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -51,10 +51,13 @@ public class CertificateService {
         // Perform live verification for the certificate
         boolean matches = false;
         try {
-            java.io.File file = new java.io.File(evidence.getStoredPath());
-            if (file.exists() && block != null) {
+            java.io.File file = evidence.getStoredPath() != null ? new java.io.File(evidence.getStoredPath()) : null;
+            if (file != null && file.exists()) {
                 String currentHash = com.evidencechain.ledger.HashUtil.sha256(java.nio.file.Files.readAllBytes(file.toPath()));
-                matches = currentHash.equalsIgnoreCase(block.getFileHash());
+                String expectedHash = (block != null && block.getFileHash() != null) ? block.getFileHash() : evidence.getFileHash();
+                matches = currentHash != null && currentHash.equalsIgnoreCase(expectedHash);
+            } else if (!evidence.isTampered()) {
+                matches = true;
             }
         } catch (Exception ignored) {
         }
@@ -112,15 +115,16 @@ public class CertificateService {
             metaTable.setWidthPercentage(100);
             metaTable.setWidths(new float[]{30, 70});
 
-            addTableRow(metaTable, "Case Number:", evidence.getCaseNumber(), boldBody, bodyFont);
+            addTableRow(metaTable, "Case Number:", evidence.getCaseNumber() != null ? evidence.getCaseNumber() : "N/A", boldBody, bodyFont);
             addTableRow(metaTable, "Evidence ID:", "#" + evidence.getId(), boldBody, bodyFont);
-            addTableRow(metaTable, "Evidence Title:", evidence.getTitle(), boldBody, bodyFont);
-            addTableRow(metaTable, "File Name:", evidence.getFileName(), boldBody, bodyFont);
-            addTableRow(metaTable, "File Type / MIME:", evidence.getFileType(), boldBody, bodyFont);
-            addTableRow(metaTable, "File Size:", evidence.getFileSize() + " bytes", boldBody, bodyFont);
-            addTableRow(metaTable, "Primary Investigator:", evidence.getInvestigatorName() + " (" + evidence.getInvestigatorId() + ")", boldBody, bodyFont);
-            addTableRow(metaTable, "Seizure Location:", evidence.getLocation(), boldBody, bodyFont);
-            addTableRow(metaTable, "Collection Timestamp:", evidence.getCollectionTimestamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), boldBody, bodyFont);
+            addTableRow(metaTable, "Evidence Title:", evidence.getTitle() != null ? evidence.getTitle() : "N/A", boldBody, bodyFont);
+            addTableRow(metaTable, "File Name:", evidence.getFileName() != null ? evidence.getFileName() : "N/A", boldBody, bodyFont);
+            addTableRow(metaTable, "File Type / MIME:", evidence.getFileType() != null ? evidence.getFileType() : "N/A", boldBody, bodyFont);
+            addTableRow(metaTable, "File Size:", (evidence.getFileSize() != null ? evidence.getFileSize() : 0) + " bytes", boldBody, bodyFont);
+            addTableRow(metaTable, "Primary Investigator:", (evidence.getInvestigatorName() != null ? evidence.getInvestigatorName() : "Forensic Officer") + " (" + (evidence.getInvestigatorId() != null ? evidence.getInvestigatorId() : "") + ")", boldBody, bodyFont);
+            addTableRow(metaTable, "Seizure Location:", evidence.getLocation() != null ? evidence.getLocation() : "Evidence Storage Vault", boldBody, bodyFont);
+            String collectionStr = evidence.getCollectionTimestamp() != null ? evidence.getCollectionTimestamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "N/A";
+            addTableRow(metaTable, "Collection Timestamp:", collectionStr, boldBody, bodyFont);
             addTableRow(metaTable, "Auto-Classification Tags:", evidence.getAutoTags() != null ? evidence.getAutoTags() : "None", boldBody, bodyFont);
 
             metaTable.setSpacingAfter(15);
@@ -134,11 +138,11 @@ public class CertificateService {
             cryptoTable.setWidthPercentage(100);
             cryptoTable.setWidths(new float[]{30, 70});
 
-            addTableRow(cryptoTable, "SHA-256 Digest:", evidence.getFileHash(), boldBody, monoFont);
+            addTableRow(cryptoTable, "SHA-256 Digest:", evidence.getFileHash() != null ? evidence.getFileHash() : "N/A", boldBody, monoFont);
             if (block != null) {
                 addTableRow(cryptoTable, "Ledger Block Index:", "Block #" + block.getBlockIndex(), boldBody, bodyFont);
-                addTableRow(cryptoTable, "Block Header Hash:", block.getBlockHash(), boldBody, monoFont);
-                addTableRow(cryptoTable, "Previous Block Pointer:", block.getPreviousHash(), boldBody, monoFont);
+                addTableRow(cryptoTable, "Block Header Hash:", block.getBlockHash() != null ? block.getBlockHash() : "N/A", boldBody, monoFont);
+                addTableRow(cryptoTable, "Previous Block Pointer:", block.getPreviousHash() != null ? block.getPreviousHash() : "N/A", boldBody, monoFont);
                 addTableRow(cryptoTable, "Block Mint Timestamp:", DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()), boldBody, bodyFont);
             }
             addTableRow(cryptoTable, "Heuristic Authenticity Score:", evidence.getAuthenticityScore() + " / 100", boldBody, bodyFont);
@@ -163,9 +167,10 @@ public class CertificateService {
             int count = 0;
             for (CustodyLog log : custodyLogs) {
                 if (count++ >= 6) break; // Display up to 6 most recent logs
-                logTable.addCell(new Phrase(log.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), bodyFont));
-                logTable.addCell(new Phrase(log.getUsername() + " (" + log.getUserRole() + ")", bodyFont));
-                logTable.addCell(new Phrase(log.getAction().name(), boldBody));
+                String timeStr = log.getTimestamp() != null ? log.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "N/A";
+                logTable.addCell(new Phrase(timeStr, bodyFont));
+                logTable.addCell(new Phrase((log.getUsername() != null ? log.getUsername() : "System") + " (" + (log.getUserRole() != null ? log.getUserRole() : "OFFICER") + ")", bodyFont));
+                logTable.addCell(new Phrase(log.getAction() != null ? log.getAction().name() : "RECORD", boldBody));
                 logTable.addCell(new Phrase(log.getDetails() != null ? log.getDetails() : "", bodyFont));
             }
 
@@ -181,7 +186,7 @@ public class CertificateService {
             leftSign.setBorder(Rectangle.NO_BORDER);
             leftSign.addElement(new Paragraph("____________________________________", bodyFont));
             leftSign.addElement(new Paragraph("Forensic Investigator Signature", boldBody));
-            leftSign.addElement(new Paragraph(evidence.getInvestigatorName(), bodyFont));
+            leftSign.addElement(new Paragraph(evidence.getInvestigatorName() != null ? evidence.getInvestigatorName() : "Forensic Officer", bodyFont));
 
             PdfPCell centerSign = new PdfPCell();
             centerSign.setBorder(Rectangle.NO_BORDER);

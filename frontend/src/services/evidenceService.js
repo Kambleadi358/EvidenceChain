@@ -44,11 +44,53 @@ export const evidenceService = {
   },
 
   getDownloadUrl(id) {
-    return `/api/evidence/${id}/download`;
+    const token = localStorage.getItem('jwt_token');
+    return token ? `/api/evidence/${id}/download?token=${encodeURIComponent(token)}` : `/api/evidence/${id}/download`;
   },
 
   getCertificateUrl(id) {
-    return `/api/evidence/${id}/certificate`;
+    const token = localStorage.getItem('jwt_token');
+    return token ? `/api/evidence/${id}/certificate?token=${encodeURIComponent(token)}` : `/api/evidence/${id}/certificate`;
+  },
+
+  async downloadCertificate(id, fileName = `Evidence_Certificate_${id}.pdf`) {
+    const response = await api.get(`/evidence/${id}/certificate`, {
+      responseType: 'blob'
+    });
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => window.URL.revokeObjectURL(url), 2000);
+  },
+
+  async openCertificateInNewTab(id) {
+    const response = await api.get(`/evidence/${id}/certificate`, {
+      responseType: 'blob'
+    });
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+  },
+
+  async downloadEvidenceFile(id, fileName) {
+    const response = await api.get(`/evidence/${id}/download`, {
+      responseType: 'blob'
+    });
+    const blob = new Blob([response.data]);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName || `evidence_${id}.bin`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => window.URL.revokeObjectURL(url), 2000);
   },
 
   async getCustodyLogs(evidenceId) {

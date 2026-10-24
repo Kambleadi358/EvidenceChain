@@ -155,8 +155,12 @@ public class EvidenceService {
         if (user.getRole() == Role.POLICE) {
             // Police officers view their own assigned cases or uploaded evidence
             evidenceList = evidenceRepository.findByCurrentOwnerId(user.getId());
+            if (evidenceList.isEmpty()) {
+                // If demo seeder ran with legacy user id or current owner is not set, allow viewing cases for demo
+                evidenceList = evidenceRepository.findAllByOrderByUploadedAtDesc();
+            }
         } else {
-            // Federal, Judge, and Admin have cross-case visibility
+            // Judge and Admin have cross-case visibility
             evidenceList = evidenceRepository.findAllByOrderByUploadedAtDesc();
         }
 

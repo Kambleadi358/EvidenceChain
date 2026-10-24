@@ -117,16 +117,17 @@ Open your browser and navigate directly to:
 
 ---
 
-## 👥 Default Role Accounts
+## 👥 Primary Demo Role Accounts
 
-The application automatically seeds four accredited judicial & investigative personas with pre-hashed BCrypt passwords:
+EvidenceChain provides three simplified user-facing role accounts initialized out-of-the-box:
 
 | Username | Password | Role | Agency / Jurisdiction | Primary Permissions |
 | :--- | :--- | :--- | :--- | :--- |
-| **`officer_chen`** | `police123` | **POLICE** | Metro Police Cybercrime Division | Upload evidence, view owned cases, initiate custody transfers |
-| **`agent_miller`** | `federal123` | **FEDERAL** | Federal Investigation Agency (FIA) | Cross-case oversight, global verification, receive transfers |
-| **`judge_vance`** | `judge123` | **JUDGE** | High Court Special Cyber Judiciary | Read-only judicial audit, verify evidence, issue legal certificates |
-| **`admin`** | `admin123` | **ADMIN** | National Security Command Center | User management, account unlock, JSP portal, attack/tamper simulation |
+| **`police`** | `Password123!` | **POLICE** | Metropolitan Police Forensics Unit | Upload evidence, view assigned cases, verify hashes, initiate custody transfers |
+| **`judge`** | `Password123!` | **JUDGE** | District Judiciary Cyber Bench | Read-only judicial review, SHA-256 verification, custody audit, PDF certificate export |
+| **`admin`** | `AdminPassword123!` | **ADMIN** | IT & Infrastructure Command | User management, security anomaly alerts, audit reports, attack & tamper simulation |
+
+*(Legacy accounts `officer_chen`, `judge_vance`, and `agent_miller` are retained in the database initializer for backwards compatibility with historical test suites).*
 
 ---
 

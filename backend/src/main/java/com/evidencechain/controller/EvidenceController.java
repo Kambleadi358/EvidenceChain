@@ -17,6 +17,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +53,7 @@ public class EvidenceController {
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyRole('POLICE', 'ADMIN')")
     public ResponseEntity<EvidenceResponse> uploadEvidence(
             @RequestParam("file") MultipartFile file,
             @ModelAttribute @Valid EvidenceUploadRequest request,
@@ -140,6 +142,7 @@ public class EvidenceController {
     }
 
     @PostMapping("/{id}/transfer")
+    @PreAuthorize("hasAnyRole('POLICE', 'ADMIN')")
     public ResponseEntity<EvidenceResponse> transferEvidence(
             @PathVariable Long id,
             @Valid @RequestBody com.evidencechain.dto.TransferRequestDto request,
@@ -155,6 +158,7 @@ public class EvidenceController {
     }
 
     @PostMapping("/{id}/tamper-simulate")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<java.util.Map<String, Object>> simulateTamper(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal userPrincipal,

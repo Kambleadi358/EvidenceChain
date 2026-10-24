@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { evidenceService } from '../services/evidenceService';
+import { authService } from '../services/authService';
 import StatusBadge from '../components/StatusBadge';
-import { Search, Filter, FileText, CheckCircle2, ShieldCheck, Download, ExternalLink, RefreshCw } from 'lucide-react';
+import { Search, Filter, FileText, UploadCloud, RefreshCw, Eye } from 'lucide-react';
 
 export default function EvidenceList() {
+  const currentUser = authService.getCurrentUser();
+  const isJudge = currentUser?.role === 'JUDGE';
+
   const [evidenceList, setEvidenceList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,37 +44,48 @@ export default function EvidenceList() {
 
   return (
     <div className="page-body">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '16px',
+        marginBottom: '24px'
+      }}>
         <div>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>
-            Evidence Vault & Registry
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+            Evidence Records
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '4px' }}>
-            Multi-agency searchable repository of hashed and blockchain-anchored digital artifacts.
+          <p style={{ color: '#64748B', fontSize: '0.9rem', marginTop: '4px' }}>
+            Multi-agency registry of hashed and blockchain-anchored digital artifacts.
           </p>
         </div>
 
-        <Link to="/upload" className="btn btn-primary btn-sm">
-          + New Evidence Intake
-        </Link>
+        {!isJudge && (
+          <Link to="/evidence/upload" className="btn btn-primary btn-sm">
+            <UploadCloud size={16} />
+            + Upload Evidence
+          </Link>
+        )}
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="card" style={{ marginBottom: '24px', padding: '18px' }}>
-        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+      <div className="card" style={{ marginBottom: '24px', padding: '20px' }}>
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
-            <Search size={16} color="var(--text-dim)" style={{ position: 'absolute', left: '12px', top: '13px' }} />
+            <Search size={15} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '12px' }} />
             <input
               type="text"
               className="form-input"
-              style={{ width: '100%', paddingLeft: '38px' }}
+              style={{ width: '100%', paddingLeft: '34px' }}
               placeholder="Search by title, file name, keyword..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          <div style={{ width: '200px' }}>
+          <div style={{ width: '220px' }}>
             <input
               type="text"
               className="form-input"
@@ -81,7 +96,7 @@ export default function EvidenceList() {
             />
           </div>
 
-          <button type="submit" className="btn btn-outline">
+          <button type="submit" className="btn btn-primary">
             Search
           </button>
 
@@ -96,9 +111,9 @@ export default function EvidenceList() {
         </form>
 
         {/* Tag Pills */}
-        <div style={{ display: 'flex', gap: '8px', marginTop: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-dim)', marginRight: '4px' }}>
-            CATEGORY:
+        <div style={{ display: 'flex', gap: '6px', marginTop: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748B', marginRight: '4px' }}>
+            CATEGORIES:
           </span>
           {tags.map((tag) => (
             <button
@@ -108,8 +123,8 @@ export default function EvidenceList() {
               className={`badge ${selectedTag === tag ? 'badge-info' : 'badge-neutral'}`}
               style={{
                 cursor: 'pointer',
-                border: selectedTag === tag ? '1px solid var(--accent-blue)' : '1px solid var(--border-color)',
-                backgroundColor: selectedTag === tag ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
+                borderColor: selectedTag === tag ? '#2563EB' : '#E2E8F0',
+                backgroundColor: selectedTag === tag ? '#EFF6FF' : '#F8FAFC',
                 padding: '4px 10px'
               }}
             >
@@ -125,68 +140,57 @@ export default function EvidenceList() {
           <table className="table">
             <thead>
               <tr>
-                <th>Case Identifier</th>
+                <th>Case Number</th>
                 <th>Evidence Title</th>
                 <th>File Name & Size</th>
-                <th>Tags</th>
-                <th>Pre-Screening</th>
+                <th>Category</th>
                 <th>Block #</th>
-                <th>Status</th>
+                <th>Integrity Status</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>
-                    Loading evidence repository...
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '48px', color: '#64748B' }}>
+                    Loading evidence records...
                   </td>
                 </tr>
               ) : evidenceList.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>
-                    No matching evidence found. Adjust search filters or upload a new item.
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '48px', color: '#64748B' }}>
+                    No matching evidence found.
                   </td>
                 </tr>
               ) : (
                 evidenceList.map((e) => (
                   <tr key={e.id}>
-                    <td style={{ fontWeight: 700, color: 'var(--accent-blue)' }}>
+                    <td style={{ fontWeight: 700, color: '#2563EB', fontSize: '0.88rem' }}>
                       {e.caseNumber}
                     </td>
                     <td>
-                      <Link to={`/evidence/${e.id}`} style={{ fontWeight: 600, color: '#fff' }}>
+                      <Link to={`/evidence/${e.id}`} style={{ fontWeight: 600, color: '#0F172A' }}>
                         {e.title}
                       </Link>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
                         Seized by: {e.investigatorName || e.investigatorId}
                       </div>
                     </td>
                     <td>
-                      <div style={{ fontWeight: 500 }}>{e.fileName}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
+                      <div style={{ fontWeight: 500, color: '#334155' }}>{e.fileName}</div>
+                      <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
                         {(e.fileSize / 1024).toFixed(1)} KB
                       </div>
                     </td>
                     <td>
-                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                        {(e.autoTags || 'FILE').split(',').slice(0, 2).map((t, idx) => (
-                          <span key={idx} className="badge badge-info" style={{ fontSize: '0.62rem' }}>
-                            {t.trim()}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td>
-                      <span style={{
-                        fontWeight: 700,
-                        color: e.authenticityScore >= 80 ? 'var(--verified-green)' : 'var(--warning-amber)'
-                      }}>
-                        {e.authenticityScore} / 100
+                      <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>
+                        {e.autoTags ? e.autoTags.split(',')[0].trim() : 'FILE'}
                       </span>
                     </td>
-                    <td style={{ fontFamily: 'JetBrains Mono', fontSize: '0.82rem' }}>
-                      #{e.blockIndex}
+                    <td>
+                      <span className="hash-pill" style={{ fontSize: '0.72rem' }}>
+                        #{e.blockIndex}
+                      </span>
                     </td>
                     <td>
                       <StatusBadge isTampered={e.tampered} />
@@ -194,17 +198,16 @@ export default function EvidenceList() {
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px' }}>
                         <Link to={`/evidence/${e.id}`} className="btn btn-outline btn-sm">
-                          Inspect
+                          {isJudge ? 'Review' : 'View Details'}
                         </Link>
-                        <a
-                          href={evidenceService.getCertificateUrl(e.id)}
-                          target="_blank"
-                          rel="noreferrer"
+                        <button
+                          type="button"
+                          onClick={() => evidenceService.downloadCertificate(e.id, `Evidence_Certificate_${e.caseNumber}_#${e.id}.pdf`)}
                           className="btn btn-outline btn-sm"
-                          title="View PDF Certificate"
+                          title="Download Legal PDF Integrity Certificate"
                         >
-                          <FileText size={13} />
-                        </a>
+                          <FileText size={14} />
+                        </button>
                       </div>
                     </td>
                   </tr>
