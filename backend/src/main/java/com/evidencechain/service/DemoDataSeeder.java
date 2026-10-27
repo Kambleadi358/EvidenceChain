@@ -77,8 +77,6 @@ public class DemoDataSeeder implements CommandLineRunner {
 
         User chen = userRepository.findByUsername("police")
                 .orElseGet(() -> userRepository.findByUsername("officer_chen").orElseThrow());
-        User miller = userRepository.findByUsername("agent_miller")
-                .orElseGet(() -> chen);
         User vance = userRepository.findByUsername("judge")
                 .orElseGet(() -> userRepository.findByUsername("judge_vance").orElseThrow());
 
@@ -140,7 +138,7 @@ public class DemoDataSeeder implements CommandLineRunner {
                 "exec_wire_transfer_phish.eml",
                 "message/rfc822",
                 case2Email.getBytes(StandardCharsets.UTF_8),
-                miller,
+                chen,
                 "Corporate Mail Gateway - Exchange Archive Partition /var/mail",
                 LocalDateTime.now().minusDays(2),
                 "10.50.1.200"
@@ -166,7 +164,7 @@ public class DemoDataSeeder implements CommandLineRunner {
                 "ddos_botnet_flood.pcap",
                 "application/vnd.tcpdump.pcap",
                 pcapBytes,
-                miller,
+                chen,
                 "Border Gateway Router Core-1, Optical Tap 3",
                 LocalDateTime.now().minusDays(1),
                 "172.16.0.1"
@@ -186,8 +184,8 @@ public class DemoDataSeeder implements CommandLineRunner {
         securityAlertRepository.save(alert1);
 
         SecurityAlert alert2 = new SecurityAlert(
-                miller.getId(),
-                miller.getUsername(),
+                chen.getId(),
+                chen.getUsername(),
                 "DOWNLOAD_BURST_ELEVATION",
                 60,
                 "High frequency raw evidence extractions (4 downloads in 6 minutes). Behavioral baseline monitoring elevated."

@@ -66,10 +66,10 @@ export default function Dashboard() {
       {/* Page Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
         <div>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
             Cybercrime Forensics Command Center
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '4px' }}>
+          <p style={{ color: '#64748B', fontSize: '0.88rem', marginTop: '4px' }}>
             Real-time evidence provenance, cryptographic blockchain verification, and AI risk monitoring.
           </p>
         </div>
@@ -100,10 +100,10 @@ export default function Dashboard() {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span className="stat-label">Minted Ledger Blocks</span>
-            <Boxes size={20} color="#a855f7" />
+            <Boxes size={20} color="#7C3AED" />
           </div>
-          <div className="stat-value" style={{ color: '#c084fc' }}>{stats.totalBlocks}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Immutable SHA-256 blocks</div>
+          <div className="stat-value" style={{ color: '#7C3AED' }}>{stats.totalBlocks}</div>
+          <div style={{ fontSize: '0.75rem', color: '#64748B' }}>Immutable SHA-256 blocks</div>
         </div>
 
         <div className="stat-card">
@@ -126,12 +126,12 @@ export default function Dashboard() {
         <div className="stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span className="stat-label">AI Anomaly Alerts</span>
-            <AlertTriangle size={20} color={stats.activeAlerts > 0 ? 'var(--tampered-red)' : 'var(--verified-green)'} />
+            <AlertTriangle size={20} color={stats.activeAlerts > 0 ? '#DC2626' : '#16A34A'} />
           </div>
-          <div className="stat-value" style={{ color: stats.activeAlerts > 0 ? '#f87171' : 'var(--verified-green)' }}>
+          <div className="stat-value" style={{ color: stats.activeAlerts > 0 ? '#DC2626' : '#16A34A' }}>
             {stats.activeAlerts}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+          <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
             {stats.activeAlerts > 0 ? 'High-risk anomalies flagged' : 'Normal activity profile'}
           </div>
         </div>
@@ -143,10 +143,10 @@ export default function Dashboard() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
             <div>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>Recent Evidence Intake</h2>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>Cryptographically stamped forensic artifacts</div>
+              <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A' }}>Recent Evidence Intake</h2>
+              <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Cryptographically stamped forensic artifacts</div>
             </div>
-            <Link to="/evidence" style={{ fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Link to="/evidence" style={{ fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', color: '#2563EB' }}>
               View All <ArrowRight size={14} />
             </Link>
           </div>
@@ -173,12 +173,12 @@ export default function Dashboard() {
                 ) : (
                   recentEvidence.map((e) => (
                     <tr key={e.id}>
-                      <td style={{ fontWeight: 600, color: 'var(--accent-blue)' }}>{e.caseNumber}</td>
+                      <td style={{ fontWeight: 600, color: '#2563EB' }}>{e.caseNumber}</td>
                       <td>
-                        <Link to={`/evidence/${e.id}`} style={{ fontWeight: 600, color: '#fff' }}>
+                        <Link to={`/evidence/${e.id}`} style={{ fontWeight: 600, color: '#0F172A' }}>
                           {e.title}
                         </Link>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{e.fileName}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748B' }}>{e.fileName}</div>
                       </td>
                       <td>
                         <span className="badge badge-info" style={{ fontSize: '0.65rem' }}>
@@ -211,10 +211,10 @@ export default function Dashboard() {
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Activity size={18} color="var(--tampered-red)" />
-                <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>AI Anomaly & Risk Alerts</h2>
+                <Activity size={18} color="#DC2626" />
+                <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A' }}>AI Anomaly & Risk Alerts</h2>
               </div>
-              <Link to="/alerts" style={{ fontSize: '0.8rem', fontWeight: 600 }}>
+              <Link to="/alerts" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#2563EB' }}>
                 Manage Alerts
               </Link>
             </div>
@@ -267,8 +267,8 @@ export default function Dashboard() {
           {/* Recent Custody Log Stream */}
           <div className="card">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-              <Activity size={18} color="var(--accent-blue)" />
-              <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>Chain of Custody Feed</h2>
+              <Activity size={18} color="#2563EB" />
+              <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A' }}>Chain of Custody Feed</h2>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -278,9 +278,9 @@ export default function Dashboard() {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '10px 12px',
-                  backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                  backgroundColor: '#F8FAFC',
                   borderRadius: '6px',
-                  border: '1px solid var(--border-color)',
+                  border: '1px solid #E2E8F0',
                   fontSize: '0.8rem'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -288,8 +288,8 @@ export default function Dashboard() {
                       {log.action}
                     </span>
                     <div>
-                      <div style={{ fontWeight: 600, color: '#fff' }}>{log.username}</div>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
+                      <div style={{ fontWeight: 600, color: '#0F172A' }}>{log.username}</div>
+                      <div style={{ fontSize: '0.7rem', color: '#64748B' }}>
                         Case: {log.caseNumber || 'N/A'}
                       </div>
                     </div>

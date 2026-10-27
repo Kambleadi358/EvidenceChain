@@ -127,7 +127,7 @@ EvidenceChain provides three simplified user-facing role accounts initialized ou
 | **`judge`** | `Password123!` | **JUDGE** | District Judiciary Cyber Bench | Read-only judicial review, SHA-256 verification, custody audit, PDF certificate export |
 | **`admin`** | `AdminPassword123!` | **ADMIN** | IT & Infrastructure Command | User management, security anomaly alerts, audit reports, attack & tamper simulation |
 
-*(Legacy accounts `officer_chen`, `judge_vance`, and `agent_miller` are retained in the database initializer for backwards compatibility with historical test suites).*
+*(Legacy accounts `officer_chen` and `judge_vance` are retained in the database initializer for backwards compatibility).*
 
 ---
 
@@ -169,7 +169,7 @@ erDiagram
         varchar username UK
         varchar password "BCrypt"
         varchar full_name
-        varchar role "POLICE, FEDERAL, JUDGE, ADMIN"
+        varchar role "POLICE, JUDGE, ADMIN"
         varchar badge_number
         varchar agency
         boolean account_locked
@@ -260,12 +260,12 @@ All `/api/**` endpoints require a Bearer JWT passed in the `Authorization: Beare
 ### Evidence Management (`/api/evidence`)
 | Method | Endpoint | Allowed Roles | Description |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/evidence/upload` | POLICE, FEDERAL, ADMIN | Uploads multipart file + metadata, computes SHA-256, screens heuristics, tags, and mints block |
+| `POST` | `/api/evidence/upload` | POLICE, ADMIN | Uploads multipart file + metadata, computes SHA-256, screens heuristics, tags, and mints block |
 | `GET` | `/api/evidence` | ALL | Lists evidence with filtering by `caseNumber`, `tag`, and `search` query |
 | `GET` | `/api/evidence/{id}` | ALL | Retrieves metadata, cryptographic hash, block link, and screening flags |
 | `GET` | `/api/evidence/{id}/download` | ALL | Downloads physical file from disk and appends a `DOWNLOAD` custody log entry |
 | `POST` | `/api/evidence/{id}/verify` | ALL | Re-hashes file from disk, compares with ledger block, logs `VERIFY`, checks chain |
-| `POST` | `/api/evidence/{id}/transfer` | POLICE, FEDERAL, ADMIN | Transfers evidence legal custody to target officer with mandatory audit notes |
+| `POST` | `/api/evidence/{id}/transfer` | POLICE, ADMIN | Transfers evidence legal custody to target officer with mandatory audit notes |
 | `POST` | `/api/evidence/{id}/tamper-simulate` | ADMIN | **Demo**: Inverts 1 byte in physical file on disk to trigger live tamper mismatch |
 | `GET` | `/api/evidence/{id}/certificate` | ALL | Generates official ISO-grade OpenPDF Certificate with embedded dynamic ZXing QR |
 | `GET` | `/api/evidence/{id}/redacted` | ALL | Generates on-the-fly PII-redacted text copy (emails, phones, SSNs, cards masked) |

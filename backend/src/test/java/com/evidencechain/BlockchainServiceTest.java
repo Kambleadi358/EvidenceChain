@@ -31,7 +31,7 @@ public class BlockchainServiceTest {
         assertNotNull(b1);
         assertEquals(1L, b1.getBlockIndex());
 
-        Block b2 = blockchainService.mintBlock(102L, "hash102", 95, "agent_miller");
+        Block b2 = blockchainService.mintBlock(102L, "hash102", 95, "police");
         assertNotNull(b2);
         assertEquals(2L, b2.getBlockIndex());
         assertEquals(b1.getBlockHash(), b2.getPreviousHash());
@@ -47,7 +47,7 @@ public class BlockchainServiceTest {
     public void testTamperedBlockDetection() {
         blockchainService.initGenesisBlock();
         blockchainService.mintBlock(201L, "original_hash_A", 100, "officer_chen");
-        blockchainService.mintBlock(202L, "original_hash_B", 90, "agent_miller");
+        blockchainService.mintBlock(202L, "original_hash_B", 90, "police");
 
         // Simulate unauthorized database modification on Block 1
         Block block1 = blockRepository.findById(1L).orElseThrow();

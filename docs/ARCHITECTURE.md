@@ -102,7 +102,7 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login", "/api/evidence/*/download", "/api/evidence/*/certificate").permitAll()
-                .requestMatchers("/api/evidence/upload", "/api/evidence/*/transfer").hasAnyRole("POLICE", "FEDERAL", "ADMIN")
+                .requestMatchers("/api/evidence/upload", "/api/evidence/*/transfer").hasAnyRole("POLICE", "ADMIN")
                 .requestMatchers("/api/evidence/*/tamper-simulate", "/api/alerts/simulate-attack", "/api/alerts/unlock-user/*").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
@@ -151,7 +151,7 @@ $$R = \min\left(100, R_{\text{heuristic}} + R_{\text{zscore}}\right)$$
 - **Night Access Flag**: Actions executed between 00:00:00 and 05:00:00 local time: $+35 \text{ pts}$.
 - **Download Burst Flag**: More than 5 raw file downloads in a rolling 10-minute window: $+40 \text{ pts}$.
 - **Repeated Verification Failures**: More than 2 consecutive failed verifications on files owned by user: $+45 \text{ pts}$.
-- **Cross-Jurisdiction / Unassigned Access**: Non-federal officer viewing evidence in a foreign case: $+30 \text{ pts}$.
+- **Cross-Jurisdiction / Unassigned Access**: Officer viewing evidence in a foreign case: $+30 \text{ pts}$.
 
 ### Statistical Z-Score Anomaly ($R_{\text{zscore}}$)
 Each user's action frequency is profiled into hourly buckets $x_t$. The system maintains:

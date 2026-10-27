@@ -138,7 +138,7 @@
             <div class="card">
                 <div class="stat-lbl">Registered Personnel</div>
                 <div class="stat-val" style="color: #60a5fa;">${userCount}</div>
-                <div style="font-size: 0.75rem; color: #64748b;">Police, Federal, Judge, Admin</div>
+                <div style="font-size: 0.75rem; color: #64748b;">Police, Judge, Admin</div>
             </div>
 
             <div class="card">

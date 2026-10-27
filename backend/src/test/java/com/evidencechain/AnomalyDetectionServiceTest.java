@@ -91,7 +91,7 @@ public class AnomalyDetectionServiceTest {
     @Test
     @DisplayName("Phase 4: Simulated cyberattack triggers immediate lockout and alert generation")
     public void testSimulatedAttackLockout() {
-        User user = userRepository.findByUsername("agent_miller").orElseThrow();
+        User user = userRepository.findByUsername("police").orElseThrow();
         assertFalse(user.isAccountLocked());
 
         AnomalyDetectionService.RiskAssessment assessment =

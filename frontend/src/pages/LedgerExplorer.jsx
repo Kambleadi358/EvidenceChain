@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { ledgerService } from '../services/ledgerService';
 import {
   Boxes,
@@ -11,7 +12,8 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
-  Link2
+  Link2,
+  Network
 } from 'lucide-react';
 
 export default function LedgerExplorer() {
@@ -77,14 +79,20 @@ export default function LedgerExplorer() {
           </p>
         </div>
 
-        <button
-          onClick={handleValidateNow}
-          disabled={validating}
-          className="btn btn-primary btn-sm"
-        >
-          <RefreshCw size={14} className={validating ? 'animate-spin' : ''} />
-          {validating ? 'Validating Nodes...' : 'Validate Chain Continuity'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <Link to="/ledger/nodes" className="btn btn-outline btn-sm">
+            <Network size={14} />
+            Network Nodes
+          </Link>
+          <button
+            onClick={handleValidateNow}
+            disabled={validating}
+            className="btn btn-primary btn-sm"
+          >
+            <RefreshCw size={14} className={validating ? 'animate-spin' : ''} />
+            {validating ? 'Validating Nodes...' : 'Validate Chain Continuity'}
+          </button>
+        </div>
       </div>
 
       {/* Global Chain Integrity Status Banner */}

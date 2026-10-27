@@ -44,7 +44,7 @@ public class EvidenceLifecycleTest {
     public void testCompleteEvidenceLifecycle() throws Exception {
         User policeUser = userRepository.findByUsername("officer_chen").orElseThrow();
         User adminUser = userRepository.findByUsername("admin").orElseThrow();
-        User federalUser = userRepository.findByUsername("agent_miller").orElseThrow();
+        User receivingOfficer = userRepository.findByUsername("police").orElseThrow();
 
         // 1. Upload Evidence
         String content = "System event log: Unauthorized root access attempt detected at IP 192.168.1.105";
@@ -91,11 +91,11 @@ public class EvidenceLifecycleTest {
         String header = new String(pdfBytes, 0, 5, StandardCharsets.US_ASCII);
         assertEquals("%PDF-", header, "Certificate must be a valid PDF starting with %PDF-");
 
-        // 6. Transfer Custody to Federal Agent
+        // 6. Transfer Custody to primary police account
         custodyService.transferCustody(
                 uploaded.getId(),
-                "agent_miller",
-                "Transferred for national federal forensics analysis",
+                "police",
+                "Transferred to primary police account for forensic review",
                 policeUser,
                 "127.0.0.1"
         );

@@ -55,7 +55,7 @@ Security: Bearer JWT passed in header: `Authorization: Bearer <jwt-token>`
 ### 2.1 Upload & Mint Evidence
 - **Endpoint**: `POST /api/evidence/upload`
 - **Content-Type**: `multipart/form-data`
-- **Access**: `POLICE`, `FEDERAL`, `ADMIN`
+- **Access**: `POLICE`, `ADMIN`
 - **Form Fields**:
   - `file`: Binary file upload
   - `caseNumber`: `CASE-2026-CY01`
@@ -142,12 +142,12 @@ Security: Bearer JWT passed in header: `Authorization: Bearer <jwt-token>`
 
 ### 2.5 Transfer Evidence Custody
 - **Endpoint**: `POST /api/evidence/{id}/transfer`
-- **Access**: `POLICE`, `FEDERAL`, `ADMIN`
+- **Access**: `POLICE`, `ADMIN`
 - **Request Body**:
 ```json
 {
-  "targetUsername": "agent_miller",
-  "transferNote": "Dispatched for federal laboratory digital forensic analysis"
+  "targetUsername": "police",
+  "transferNote": "Dispatched for forensic laboratory analysis"
 }
 ```
 - **Response (200 OK)**: Evidence Response updated with new `currentOwnerName`.
@@ -257,8 +257,8 @@ Security: Bearer JWT passed in header: `Authorization: Bearer <jwt-token>`
     "evidenceId": 1,
     "caseNumber": "CASE-2026-CY01",
     "userId": 2,
-    "username": "agent_miller",
-    "userRole": "FEDERAL",
+    "username": "police",
+    "userRole": "POLICE",
     "action": "VERIFY",
     "timestamp": "2026-10-18T14:35:10",
     "ipAddress": "127.0.0.1",

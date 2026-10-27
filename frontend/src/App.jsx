@@ -21,6 +21,7 @@ import UploadEvidence from './pages/UploadEvidence';
 import EvidenceDetail from './pages/EvidenceDetail';
 import CustodyVerification from './pages/CustodyVerification';
 import LedgerExplorer from './pages/LedgerExplorer';
+import LedgerNodes from './pages/LedgerNodes';
 import Certificates from './pages/Certificates';
 import Alerts from './pages/Alerts';
 
@@ -106,7 +107,8 @@ function ProtectedLayout() {
           {/* Verification & Custody Ledger */}
           <Route path="/custody" element={<CustodyVerification />} />
           <Route path="/ledger" element={<LedgerExplorer />} />
-          <Route path="/nodes" element={<LedgerExplorer />} />
+          <Route path="/ledger/nodes" element={<LedgerNodes />} />
+          <Route path="/nodes" element={<LedgerNodes />} />
           <Route path="/certificates" element={<Certificates />} />
           <Route path="/alerts" element={<Alerts />} />
 
